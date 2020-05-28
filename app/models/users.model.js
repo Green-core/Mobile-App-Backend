@@ -22,16 +22,21 @@ const UserSchema = new mongoose.Schema({
     default: "user",
     required: true,
   },
+  
+  mobile:{ 
+    type: String, 
+    required: false,
+  },
 
   created_at: {
     type: Date,
-    default: Date.now,
+    default: new Date(),
     required: true,
   },
 
   updated_at: {
     type: Date,
-    default: Date.now,
+    default: new Date(),
     required: true,
   },
 
@@ -43,7 +48,7 @@ const UserSchema = new mongoose.Schema({
       },
       connected_date: {
         type: String,
-        default: Date.now,
+        default: new Date(),
         required: true,
       },
     },
