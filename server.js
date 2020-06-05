@@ -41,7 +41,7 @@ const unitRoutes = require("./app/routes/unit.routs");
 
 // Use Routes
 app.use("/users", userRoutes);
-//app.use("/units", unitRoutes);
+app.use("/units", unitRoutes);
 app.use("/plants", plantRoutes);
 
 app.listen(port, () => {
