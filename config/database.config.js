@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 module.exports = {
-    url: `${process.env.URI}`,
-}
+  url: "mongodb+srv://nipuna:nipuna123@green-core-j9vuj.mongodb.net/GreenCore",
+};

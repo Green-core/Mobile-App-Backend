@@ -35,10 +35,14 @@ app.get("/", (req, res) => {
 });
 
 // routes
-const userRoutes = require("./app/routes/users.routes");
+const userRoutes = require("./app/routes/user.routes");
+const plantRoutes = require("./app/routes/plant.routes");
+const unitRoutes = require("./app/routes/unit.routs");
 
 // Use Routes
 app.use("/users", userRoutes);
+//app.use("/units", unitRoutes);
+app.use("/plants", plantRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
