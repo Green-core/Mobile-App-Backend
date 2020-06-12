@@ -21,8 +21,7 @@ const unitSchema = new mongoose.Schema({
 
   plantType: {
     type: String,
-    required: true,
-    unique: true,
+    required: true, 
   },
 
   location: {

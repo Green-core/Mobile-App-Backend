@@ -68,4 +68,24 @@ router.delete("/delete/:id", (req, res) => {
   res.status(200);
 });
 
+
+/**
+ * @route   GET /units/get/:id
+ * @desc    Get all units  related to one user data
+ * @access  Private
+ */
+
+
+router.get("/get/:id", (req, res) => {
+  Unit.find({ownerID:req.params.id})
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  res.status(200);
+});
+ 
+
 module.exports = router;
