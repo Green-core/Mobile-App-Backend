@@ -37,13 +37,15 @@ router.post("/check", (req, res) => {
 });
 
 /**
- * @route   PUT /users/update/account/
+ * @route   PUT /users/update/
  * @desc    Update account data
  * @access  Private
  */
 
-router.put("/update/:id", (req, res) => {
-  const hash = bcrypt.hashSync(req.params.id, 10);
+router.put("/update/", (req, res) => {
+  const userId = req.body.password
+  const hash = bcrypt.hashSync(userId , 10);
+  console.log(req.body.id , hash)
   User.updateOne(
     {
       _id: req.body.id,
@@ -52,7 +54,7 @@ router.put("/update/:id", (req, res) => {
     { upsert: true }
   )
     .then((result) => {
-      res.send(result);
+      res.send(hash);
     })
     .catch((err) => {
       console.log(err);
