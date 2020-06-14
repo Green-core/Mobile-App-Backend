@@ -12,10 +12,11 @@ const config = require("../../config/auth.config.js");
  * @access  Private
  */
 
-router.get("/check", (req, res) => {
+router.post("/check", (req, res) => {
   User.findOne({ _id: req.body.id })
     .then((user) => {
       if (!user) {
+        console.log('No such user')
         return res.status(200).json({ status: false });
       } else {
         console.log(user.password);
@@ -41,8 +42,8 @@ router.get("/check", (req, res) => {
  * @access  Private
  */
 
-router.put("/update/account", (req, res) => {
-  const hash = bcrypt.hashSync(req.body.password, 10);
+router.put("/update/:id", (req, res) => {
+  const hash = bcrypt.hashSync(req.params.id, 10);
   User.updateOne(
     {
       _id: req.body.id,
@@ -92,28 +93,6 @@ router.get("/get/:id", (req, res) => {
   res.status(200);
 });
 
-/**
- * @route   PUT /users/update/:id
- * @desc    Update  profile data
- * @access  Private
- */
-
-router.put("/update/:id", (req, res) => {
-  User.updateOne(
-    {
-      _id: req.params.id,
-    },
-    req.body,
-    { upsert: true }
-  )
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  res.status(200);
-});
 
 /**
  * @route   Post /user/register/
