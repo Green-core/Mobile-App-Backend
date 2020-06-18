@@ -83,9 +83,9 @@ router.get("/get", async (req, res) => {
  * @desc    Retrieve user
  * @access  Private
  */
-
-router.get("/get/:id", (req, res) => {
-  User.findById(req.params.id)
+//// add verifyToken as middleware to test AuthHomeScreen remove it for other not protected components
+router.get("/get/:id", (req, res) => {  
+  User.findById(req.params.id)     //req.decoded.id instead of req.params.id
     .then((doc) => {
       res.json(doc);
     })
@@ -119,7 +119,7 @@ router.post("/register", (req, res) => {
           // newUser.password = hash;
           newUser
             .save()
-            .then((user) => res.json(user))
+            .then((user) => res.status(200).json(user))
             .catch((err) => console.log(err));
         });
       }
@@ -160,23 +160,23 @@ router.post("/login", (req, res) => {
                 expiresIn: 86400, //1 day in seconds
               },
               (err, token) => {
-                res.json({
+                res.status(200).json({
                   success: true,
                   message: "Authentication successful!",
-                  token: "Bearer " + token,
+                  token: token,
                 });
               }
             );
           } else {
             return res
               .status(400)
-              .json({ incorrect: "Incorrect Username or password" });
+              .json({ err: "Incorrect Username or password" });
           }
         });
       } else {
         return res
           .status(404)
-          .json({ incorrect: "Incorrect Username or password" });
+          .json({ err: "Incorrect Username or password" });
       }
     })
     .catch((err) => {
