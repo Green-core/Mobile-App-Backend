@@ -12,10 +12,11 @@ const config = require("../../config/auth.config.js");
  * @access  Private
  */
 
-router.get("/check", (req, res) => {
+router.post("/check", (req, res) => {
   User.findOne({ _id: req.body.id })
     .then((user) => {
       if (!user) {
+        console.log('No such user')
         return res.status(200).json({ status: false });
       } else {
         console.log(user.password);
@@ -36,13 +37,15 @@ router.get("/check", (req, res) => {
 });
 
 /**
- * @route   PUT /users/update/account/
+ * @route   PUT /users/update/
  * @desc    Update account data
  * @access  Private
  */
 
-router.put("/update/account", (req, res) => {
-  const hash = bcrypt.hashSync(req.body.password, 10);
+router.put("/update/", (req, res) => {
+  const userId = req.body.password
+  const hash = bcrypt.hashSync(userId , 10);
+  console.log(req.body.id , hash)
   User.updateOne(
     {
       _id: req.body.id,
@@ -51,7 +54,7 @@ router.put("/update/account", (req, res) => {
     { upsert: true }
   )
     .then((result) => {
-      res.send(result);
+      res.send(hash);
     })
     .catch((err) => {
       console.log(err);
@@ -80,9 +83,9 @@ router.get("/get", async (req, res) => {
  * @desc    Retrieve user
  * @access  Private
  */
-
-router.get("/get/:id", (req, res) => {
-  User.findById(req.params.id)
+//// add verifyToken as middleware to test AuthHomeScreen remove it for other not protected components
+router.get("/get/:id", (req, res) => {  
+  User.findById(req.params.id)     //req.decoded.id instead of req.params.id
     .then((doc) => {
       res.json(doc);
     })
@@ -92,28 +95,6 @@ router.get("/get/:id", (req, res) => {
   res.status(200);
 });
 
-/**
- * @route   PUT /users/update/:id
- * @desc    Update  profile data
- * @access  Private
- */
-
-router.put("/update/:id", (req, res) => {
-  User.updateOne(
-    {
-      _id: req.params.id,
-    },
-    req.body,
-    { upsert: true }
-  )
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  res.status(200);
-});
 
 /**
  * @route   Post /user/register/
@@ -138,7 +119,7 @@ router.post("/register", (req, res) => {
           // newUser.password = hash;
           newUser
             .save()
-            .then((user) => res.json(user))
+            .then((user) => res.status(200).json(user))
             .catch((err) => console.log(err));
         });
       }
@@ -179,23 +160,23 @@ router.post("/login", (req, res) => {
                 expiresIn: 86400, //1 day in seconds
               },
               (err, token) => {
-                res.json({
+                res.status(200).json({
                   success: true,
                   message: "Authentication successful!",
-                  token: "Bearer " + token,
+                  token: token,
                 });
               }
             );
           } else {
             return res
               .status(400)
-              .json({ incorrect: "Incorrect Username or password" });
+              .json({ err: "Incorrect Username or password" });
           }
         });
       } else {
         return res
           .status(404)
-          .json({ incorrect: "Incorrect Username or password" });
+          .json({ err: "Incorrect Username or password" });
       }
     })
     .catch((err) => {
