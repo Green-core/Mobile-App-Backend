@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const verifyToken = require("../middleware/authJWT");
 const jwt = require("jsonwebtoken");
 const config = require("../../config/auth.config.js");
+const { check,validationResult } = require('express-validator');
 
 /**
  * @route   GET /users/check
@@ -102,33 +103,56 @@ router.get("/get/:id", (req, res) => {
  * @access  Private
  */
 
-router.post("/register", (req, res) => {
+router.post("/register",
+[
+  check('name')
+    .not()
+    .isEmpty()
+    .withMessage('Name is required'),
+  check('email', 'Email is required')
+    .isEmail().withMessage('Email must be valid'),
+  check('password', 'Password is requried')
+    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
+    .custom((value, { req }) => {
+        if (value !== req.body.confirmPassword) {
+            throw new Error("Password confirmation is incorrect");
+        } 
+    }),
+  check('confirmPassword','confirm password is required'),
+],
+(req, res) => {
+  var errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   User.findOne({ email: req.body.email })
     .then((user) => {
-      if (user) {
-        return res.status(400).json({ email: "Email already exists" });
-      } else {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          if (err) throw err;
-          const newUser = new User({
-            name: req.body.name,
-            email: req.body.email,
-            password: hash,
-            // TODO : isEmailVerified: false   email verfication
+        if (user) {
+          return res.status(400).json({ email: "Email already exists" });
+        } 
+        else {
+          bcrypt.hash(req.body.password, 10, (err, hash) => {
+            if (err) throw err;
+            const newUser = new User({
+              name: req.body.name,
+              email: req.body.email,
+              password: hash,
+              // TODO : isEmailVerified: false   email verfication
+            });
+            // newUser.password = hash;
+            newUser
+              .save()
+              .then((user) => res.status(200).json(user))
+              .catch((err) => console.log(err));
           });
-          // newUser.password = hash;
-          newUser
-            .save()
-            .then((user) => res.status(200).json(user))
-            .catch((err) => console.log(err));
-        });
-      }
-    })
+        }
+      })
     .catch((err) => {
       console.log(err);
       return res.status(400).json(err);
     });
-});
+})
+;
 
 /**
  * @route   Post /user/login/
@@ -136,7 +160,15 @@ router.post("/register", (req, res) => {
  * @access  Private
  */
 
-router.post("/login", (req, res) => {
+router.post("/login",
+[
+  check('email', 'Email is required'),
+  check('password', 'Password is requried'),
+],
+(req, res) => {
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   const email = req.body.email;
   const password = req.body.password;
 
