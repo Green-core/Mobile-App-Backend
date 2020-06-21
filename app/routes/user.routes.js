@@ -105,32 +105,40 @@ router.get("/get/:id", (req, res) => {
 
 router.post("/register",
 [
-  check('name')
+  check('name','Name is required').not().isEmpty(),
+  check('email')
+    .isEmail().withMessage('Email must be valid')
+    .custom(value=>{
+      return User.findOne({email:value}).then(user=>{
+        if (user){
+          throw new Error("Email Already Exists");
+        }
+        return true;
+      })
+    }),
+  check('password',"Password must be at least 6 characters").isLength({ min: 6 }),
+  check('confirmPassword','Password confirmation is required')
     .not()
     .isEmpty()
-    .withMessage('Name is required'),
-  check('email', 'Email is required')
-    .isEmail().withMessage('Email must be valid'),
-  check('password', 'Password is requried')
-    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
     .custom((value, { req }) => {
-        if (value !== req.body.confirmPassword) {
-            throw new Error("Password confirmation is incorrect");
-        } 
-    }),
-  check('confirmPassword','confirm password is required'),
+      if (value !== req.body.password) {
+          throw new Error("Password confirmation is incorrect");
+      } 
+      return true;
+  }),
 ],
 (req, res) => {
   var errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    console.log(errors.array())
+    return res.status(422).json(errors.array());
   }
-  User.findOne({ email: req.body.email })
-    .then((user) => {
-        if (user) {
-          return res.status(400).json({ email: "Email already exists" });
-        } 
-        else {
+  // User.findOne({ email: req.body.email })
+  //   .then((user) => {
+  //       if (user) {
+  //         return res.status(400).json({ email: "Email already exists" });
+  //       } 
+  //       else {
           bcrypt.hash(req.body.password, 10, (err, hash) => {
             if (err) throw err;
             const newUser = new User({
@@ -145,14 +153,14 @@ router.post("/register",
               .then((user) => res.status(200).json(user))
               .catch((err) => console.log(err));
           });
-        }
-      })
-    .catch((err) => {
-      console.log(err);
-      return res.status(400).json(err);
-    });
-})
-;
+        })
+      //})
+    // .catch((err) => {
+    //   console.log(err);
+    //   return res.status(404).json(err);
+    // });
+//})
+    
 
 /**
  * @route   Post /user/login/
@@ -166,6 +174,7 @@ router.post("/login",
   check('password', 'Password is requried'),
 ],
 (req, res) => {
+  var errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
