@@ -169,15 +169,15 @@ router.post("/register",
  */
 
 router.post("/login",
-[
-  check('email', 'Email is required'),
-  check('password', 'Password is requried'),
-],
+// [
+//   check('email').isEmail().withMessage('Email must be valid'),
+//   check('password', 'Password is requried').not().isEmpty(),
+// ],
 (req, res) => {
-  var errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  // var errors = validationResult(req.body);
+  // if (!errors.isEmpty()) {
+  //   return res.status(422).json({ errors: errors.array() });
+  // }
   const email = req.body.email;
   const password = req.body.password;
 
@@ -202,6 +202,7 @@ router.post("/login",
               },
               (err, token) => {
                 res.status(200).json({
+                  id:user._id,
                   success: true,
                   message: "Authentication successful!",
                   token: token,
@@ -211,18 +212,18 @@ router.post("/login",
           } else {
             return res
               .status(400)
-              .json({ err: "Incorrect Username or password" });
+              .send({ err: "Incorrect Username or password" });
           }
         });
       } else {
         return res
-          .status(404)
-          .json({ err: "Incorrect Username or password" });
+          .status(400)
+          .send({ err: "Incorrect Username or password" });
       }
     })
     .catch((err) => {
       console.log(err);
-      return res.status(400).json(err);
+      return res.status(404).send(err);
     });
 });
 
