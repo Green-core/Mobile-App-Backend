@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Unit = require("../models/unit.model");
+const ObjectId = require('mongoose').Types.ObjectId; 
 
 /**
  * @route   GET /units/check/:id
@@ -77,8 +78,9 @@ router.delete("/delete/:id", (req, res) => {
 
 
 router.get("/get/:id", (req, res) => {
-  Unit.find({ownerID:req.params.id})
+  Unit.find({userID: new ObjectId(req.params.id)})
     .then((result) => {
+      console.log(req.params.id)
       res.send(result);
     })
     .catch((err) => {
