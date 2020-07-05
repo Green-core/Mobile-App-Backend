@@ -203,8 +203,7 @@ router.post("/login",
               (err, token) => {
                 res.status(200).json({
                   id:user._id,
-                  success: true,
-                  message: "Authentication successful!",
+                  email:user.email,
                   token: token,
                 });
               }
