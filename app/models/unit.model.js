@@ -43,7 +43,7 @@ const unitSchema = new mongoose.Schema({
   },
   humiditySensor: {
     lastReading: {
-      type: "Date",
+      type: "String",
     },
     lastUpdatedTime: {
       $date: {
