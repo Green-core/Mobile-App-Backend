@@ -39,12 +39,14 @@ const userRoutes = require("./app/routes/user.routes");
 const plantRoutes = require("./app/routes/plant.routes");
 const unitRoutes = require("./app/routes/unit.routs");
 const chatRoutes = require("./app/routes/chatRoutes")
+const actuatorRoutes = require("./app/routes/actuatorRoutes")
 
 // Use Routes
 app.use("/users", userRoutes);
 app.use("/units", unitRoutes);
 app.use("/plants", plantRoutes);
 app.use("/chats", chatRoutes)
+app.use("/actuator", actuatorRoutes)
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
