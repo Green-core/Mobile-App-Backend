@@ -39,7 +39,7 @@ router.post("/check", (req, res) => {
 
 /**
  * @route   PUT /users/update/
- * @desc    Update account data
+ * @desc    Update user data
  * @access  Private
  */
 
@@ -62,6 +62,40 @@ router.put("/update/", (req, res) => {
     });
   res.status(200);
 });
+
+
+
+
+/**
+ * @route   PUT /users/account/update/
+ * @desc    Update account data
+ * @access  Private
+ */
+
+router.put("/account/update/", (req, res) => { 
+  console.log(JSON.stringify(req.body))
+  User.updateOne(
+    {
+      _id: req.body.id,
+    },
+    { name: req.body.name,
+      mobile: req.body.mobile},
+    { upsert: true }
+  )
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  res.status(200);
+});
+
+
+
+
+
+
 
 /**
  * @route   GET /users
