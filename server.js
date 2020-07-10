@@ -46,7 +46,7 @@ app.use("/users", userRoutes);
 app.use("/units", unitRoutes);
 app.use("/plants", plantRoutes);
 app.use("/chats", chatRoutes)
-app.use("/actuator", actuatorRoutes)
+app.use("/actuators", actuatorRoutes)
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

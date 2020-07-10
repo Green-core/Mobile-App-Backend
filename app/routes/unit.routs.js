@@ -109,6 +109,36 @@ router.get("/get/:id", (req, res) => {
   res.status(200);
 });
  
+/**
+ * @route   PUT /units/actuators/:id
+ * @desc    Turn actuators on/off
+ * @access  Private
+ */
+
+router.put("/actuators/:id", (req, res) => {
+  Unit.updateOne(
+    {
+      moduleID: req.params.id,
+    },
+    {
+      [req.body.actuator]:{
+          activated:req.body.state,
+          lastUpdatedTime: new Date()
+      }  
+    },
+    
+    { upsert: true }
+  )
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  res.status(200);
+});
+
+
 
 
 module.exports = router;
