@@ -1,128 +1,202 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
+const { ObjectId } = require('mongodb');
 
-// Create Schema
-const unitSchema = new mongoose.Schema({
-  soilMoistureSensor: {
-    lastReading: {
-      type: "String",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-    pastReadings: {
-      type: ["Mixed"],
-    },
-  },
-  temperatureSensor: {
-    lastReading: {
-      type: "String",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-    pastReadings: {
-      type: ["Mixed"],
-    },
-  },
-  lightIntensitySensor: {
-    lastReading: {
-      type: "String",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-    pastReadings: {
-      type: ["Mixed"],
-    },
-  },
-  humiditySensor: {
-    lastReading: {
-      type: "String",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-    pastReadings: {
-      type: ["Mixed"],
-    },
-  },
-  waterMotorActuator: {
-    activated: {
-      type: "Boolean",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-  },
-  lightActuator: {
-    activated: {
-      type: "Boolean",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-  },
-  buzzerActuator: {
-    activated: {
-      type: "Boolean",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-  },
-  fertilizerActuator: {
-    activated: {
-      type: "Boolean",
-    },
-    lastUpdatedTime: {
-      $date: {
-        type: "Date",
-      },
-    },
-  },
-  userID: {
-    $oid: {
-      type: "ObjectId",
-    },
-  },
-  moduleID: {
-    $oid: {
-      type: "ObjectId",
-    },
-  },
-  userName: {
-    type: "String",
-  },
-  location: {
-    type: "String",
-  },
-  createdAt: {
-    $date: {
-      type: "Date",
-    },
-  },
-  updatedAt: {
-    $date: {
-      type: "Date",
-    },
-  },
-  __v: {
-    type: "Number",
-  },
-});
+const UnitSchema = new mongoose.Schema({
 
-module.exports = mongoose.model("units", unitSchema);
+    soilMoistureSensor: {
+        lastReading: {
+            type: String,
+            default: "0"
+        },
+        connected: {
+            type: Boolean
+        },
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        pastReadings: {
+            reading: {
+                type: String
+            },
+            time: {
+                type: Date
+            }
+        }
+    },
+    temperatureSensor: {
+        lastReading: {
+            type: String,
+            default: "0"
+        },
+        connected: {
+            type: Boolean
+        },
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        pastReadings: {
+            reading: {
+                type: String
+            },
+            time: {
+                type: Date
+            }
+        }
+    },
+    lightIntensitySensor: {
+        lastReading: {
+            type: String,
+            default: "0"
+        },
+        connected: {
+            type: Boolean
+        },
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        pastReadings: {
+            reading: {
+                type: String
+            },
+            time: {
+                type: Date
+            }
+        }
+    },
+    humiditySensor: {
+        lastReading: {
+            type: String,
+            default: "0"
+        },
+        connected: {
+            type: Boolean
+        },
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        pastReadings: {
+            reading: {
+                type: String
+            },
+            time: {
+                type: Date
+            }
+        }
+    },
+    
+    waterMotorActuator: {
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        type: {
+            type: Boolean // automatic or manual
+        },
+        types: {
+            time: {
+                type: Date
+            },
+            amount: {
+                type: String
+            }
+        },
+        activated: {
+            type: Boolean,
+            default: false
+        }
+    },
+    lightActuator: {
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        type: {
+            type: Boolean // automatic or manual
+        },
+        types: {
+            time: {
+                type: Date
+            },
+            amount: {
+                type: String
+            }
+        },
+        activated: {
+            type: Boolean,
+            default: false
+        }
+    },
+    buzzerActuator: {
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        type: {
+            type: Boolean // automatic or manual
+        },
+        types: {
+            time: {
+                type: Date
+            },
+            amount: {
+                type: String
+            }
+        },
+        activated: {
+            type: Boolean,
+            default: false
+        }
+    },
+    fertilizerActuator: {
+        lastUpdatedTime: {
+            type: Date,
+            default: Date.now
+        },
+        type: {
+            type: Boolean // automatic or manual
+        },
+        types: {
+            time: {
+                type: Date
+            },
+            amount: {
+                type: String
+            }
+        },
+        activated: {
+            type: Boolean,
+            default: false
+        }
+    },	
+    userID: { // optional if module_id is there
+        type: ObjectId,
+        required: true
+    },
+	moduleID: {
+        type: ObjectId,
+        required: true
+    },
+	userName: {
+        type: String,
+        required: true
+    },
+    location: {
+        type: String,
+        // required: true
+    },
+	createdAt: {
+        type: Date,
+        default: Date.now
+    },
+	updatedAt: {
+        type: Date,
+        default: Date.now
+    },
+
+})
+
+module.exports = mongoose.model("unit", UnitSchema)
