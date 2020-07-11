@@ -6,6 +6,10 @@ const verifyToken = require("../middleware/authJWT");
 const jwt = require("jsonwebtoken");
 const config = require("../../config/auth.config.js");
 const { check,validationResult } = require('express-validator');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const seedrandom = require('seedrandom');
+
 
 /**
  * @route   GET /users/check
@@ -141,7 +145,7 @@ router.post("/register",
 [
   check('name','Name is required').not().isEmpty(),
   check('email')
-    .isEmail().withMessage('Email must be valid')
+    .isEmail().normalizeEmail().withMessage('Email must be valid')
     .custom(value=>{
       return User.findOne({email:value}).then(user=>{
         if (user){
@@ -260,4 +264,160 @@ router.post("/login",
     });
 });
 
+/**
+ * @route   Post /user/forgotPassword/
+ * @desc    Forgot password email request 
+ * @access  Private
+ */
+router.post("/forgotPassword",[
+  check('email')
+    .isEmail().withMessage('Email must be valid')
+    .custom(value=>{
+      return User.findOne({email:value}).then(user=>{
+        if (!user){
+          throw new Error("Email doesn't Exist");
+        }
+        return true;
+      })
+    })
+  ],
+  (req, res) => {
+    var errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors.array())
+      return res.status(422).json(errors.array());
+    }
+  //  const token = crypto.randomBytes(20).toString('hex');       //generate token 
+   // console.log(token)
+   // var prng = new seedrandom();
+   // console.log(prng()); 
+    const rng = seedrandom(
+      crypto.randomBytes(64).toString('base64'), 
+      { entropy: true }
+    );
+    const token = (rng()).toString().substring(3, 9);
+    //console.log('code = ',token)
+
+     User.findOneAndUpdate({email: req.body.email},{resetPasswordToken : token,resetPasswordExpire : Date.now() + 3600000},{new:true})
+     .then(res=>console.log(res))
+     .catch(err=>res.status(400).send({err:"Email doesn't exist"}))         //token didn't update in db 
+   //  .then(res=>{
+     //  if(res){
+         //  console.log(res)
+          const transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: config.email,
+                pass: config.emailPassword,
+              },
+            });
+    
+            const mailOptions = {
+              from: 'greencoreorg27@gmail.com',
+              to: 'kavigamage23@gmail.com',
+              subject: 'Reset Password',
+              text:
+                'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
+                + 'Please use the following code to reset password in Green Core App. Complete the process within one hour of receiving it:\n\n'
+                + `${token}\n\n`
+                + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
+            };
+    
+            console.log('sending mail');
+            transporter.sendMail(mailOptions, (err, response) => {
+              if (err) {
+                console.error('there was an error: ', err);       //email didn't send to user
+                res.status(404).json({err:"Sending email failed try again"})
+              } else {
+                console.log('here is the res: ', response);
+                res.status(200).json(response);
+              }
+            });
+       //   }
+      //  })
+       // .catch(err=>console.log(err))
+        }
+      )
+      
+
+/**
+ * @route   Post /user/checkToken/
+ * @desc    check Token  
+ * @access  Private
+ */
+router.post("/checkToken",[
+  check('email')
+    .custom(value=>{
+      return User.findOne({email:value}).then(user=>{
+        if (!user){
+          throw new Error("Email doesn't Exist");
+        }
+        return true;
+      })
+    })
+  ],
+  (req, res) => {
+    var errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors.array())
+      return res.status(422).json(errors.array());
+    }
+    User.findOneAndUpdate({email:req.body.email,resetPasswordToken:req.body.token,resetPasswordExpire:{"$gt":Date.now()}},{resetPasswordToken:null,resetPasswordExpire:null},{new:true})
+        .then(data=>{
+          if(data){
+            console.log(data);
+            return res.status(200).send(data)
+          }
+          else{
+            res.status(400).send({err:'Token is expired or invalid'})
+          }
+        })
+        .catch((err) => console.log(err));
+  }
+)
+
+ /**
+ * @route   Post /user/resetPassword/
+ * @desc    Reset password 
+ * @access  Private
+ */
+
+ router.post('/resetPassword',[
+  check('password',"Password must be at least 6 characters").isLength({ min: 6 }),
+  check('confirmPassword','Password confirmation is required')
+    .not()
+    .isEmpty()
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Password confirmation is incorrect");
+      }  
+      return true;
+    }),
+  ],
+  (req,res)=>{
+    var errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors.array())
+      return res.status(422).json(errors.array());
+    }
+      User
+        .findOne({email:req.body.email})
+        .then((user)=>{
+          if(user){
+            bcrypt.hash(req.body.password, 10, (err, hash) => {
+              if (err) throw err;
+              user.password= hash
+              user
+                .save()
+                .then((user) => res.status(200).json(user))
+                .catch((err) => console.log(err));
+            });
+          }
+          else{
+            return res.status(400).send({err:'Email not found'})
+          }
+        })
+  }
+ )
+// password reset confirmation email
 module.exports = router;
