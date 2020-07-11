@@ -38,15 +38,20 @@ app.get("/", (req, res) => {
 const userRoutes = require("./app/routes/user.routes");
 const plantRoutes = require("./app/routes/plant.routes");
 const unitRoutes = require("./app/routes/unit.routs");
-const chatRoutes = require("./app/routes/chatRoutes")
-const actuatorRoutes = require("./app/routes/actuatorRoutes")
+const chatRoutes = require("./app/routes/chatRoutes") 
+const notificationRoutes = require("./app/routes/notification.routes") 
+ 
 
 // Use Routes
 app.use("/users", userRoutes);
 app.use("/units", unitRoutes);
 app.use("/plants", plantRoutes);
-app.use("/chats", chatRoutes)
-app.use("/actuators", actuatorRoutes)
+app.use("/chats", chatRoutes) 
+app.use("/notifications", notificationRoutes) 
+
+
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
