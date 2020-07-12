@@ -36,6 +36,11 @@ const userSchema = new mongoose.Schema({
     required: false,
   },
 
+  emailVerify:{
+    type:Boolean,
+    default:false,
+  },
+
   created_at: {
     type: Date,
     default: new Date(),
