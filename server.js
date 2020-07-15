@@ -40,6 +40,7 @@ const plantRoutes = require("./app/routes/plant.routes");
 const unitRoutes = require("./app/routes/unit.routs");
 const chatRoutes = require("./app/routes/chatRoutes") 
 const notificationRoutes = require("./app/routes/notification.routes") 
+const tipsRoutes = require("./app/routes/tips.routes") 
  
 
 // Use Routes
@@ -48,6 +49,7 @@ app.use("/units", unitRoutes);
 app.use("/plants", plantRoutes);
 app.use("/chats", chatRoutes) 
 app.use("/notifications", notificationRoutes) 
+app.use("/tips", tipsRoutes) 
 
 
 

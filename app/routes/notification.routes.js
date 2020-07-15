@@ -32,13 +32,15 @@ router.get("/check/:id", (req, res) => {
         var alertTemperature = false; 
         var alertLightIntensity = false; 
         var alertHumidity = false;  
+
  
         if (parseInt(unitData.soilMoistureSensor.lastReading) < 20 ) {
           alertSoilMoisture = true; 
           unitAlert = true;
           soilMoistureSensorAlert = { 
               value: unitData.soilMoistureSensor.lastReading,
-              time: new Date(),
+              time: new Date(), 
+              name: unitData.unitName
           
           };
         }
@@ -48,7 +50,8 @@ router.get("/check/:id", (req, res) => {
           unitAlert = true;
           temperatureSensorAlert  = { 
               value: unitData.temperatureSensor.lastReading.substring( 0, unitData.temperatureSensor.lastReading.length - 1),
-              time: new Date(),
+              time: new Date(), 
+              name: unitData.unitName
             
           };
         }
@@ -56,9 +59,11 @@ router.get("/check/:id", (req, res) => {
         if ( parseInt(unitData.lightIntensitySensor.lastReading.substring( 0, unitData.lightIntensitySensor.lastReading.length - 3 )) < 20 ) {
           alertLightIntensity = true; 
           unitAlert = true;
+          console.log(unitData['unitName'])
           lightIntensitySensorAlert = { 
               value: unitData.lightIntensitySensor.lastReading.substring(0,unitData.lightIntensitySensor.lastReading.length - 3),
               time: new Date(), 
+              name: unitData.unitName
           };
         }
 
@@ -68,7 +73,8 @@ router.get("/check/:id", (req, res) => {
           humiditySensorAlert  = {
             humiditySensor: {
               value: unitData.humiditySensor.lastReading.substring( 0,unitData.humiditySensor.lastReading.length - 1),
-              time: new Date(),
+              time: new Date(), 
+              name: unitData.unitName
             },
           };
         }

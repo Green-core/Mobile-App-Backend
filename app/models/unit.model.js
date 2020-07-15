@@ -196,6 +196,11 @@ const UnitSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    unitName: {
+        type: String,
+        required: true,
+        default: ""
+    },
 
 })
 
