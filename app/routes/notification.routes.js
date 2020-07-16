@@ -40,8 +40,8 @@ router.get("/check/:id", (req, res) => {
           soilMoistureSensorAlert = { 
               value: unitData.soilMoistureSensor.lastReading,
               time: new Date(), 
-              name: unitData.unitName
-          
+              name: unitData.unitName,
+              type:'SM'
           };
         }
 
@@ -51,8 +51,9 @@ router.get("/check/:id", (req, res) => {
           temperatureSensorAlert  = { 
               value: unitData.temperatureSensor.lastReading.substring( 0, unitData.temperatureSensor.lastReading.length - 1),
               time: new Date(), 
-              name: unitData.unitName
-            
+              name: unitData.unitName,
+              type:'TMP'
+              
           };
         }
 
@@ -63,19 +64,19 @@ router.get("/check/:id", (req, res) => {
           lightIntensitySensorAlert = { 
               value: unitData.lightIntensitySensor.lastReading.substring(0,unitData.lightIntensitySensor.lastReading.length - 3),
               time: new Date(), 
-              name: unitData.unitName
+              name: unitData.unitName,
+              type:'LT'
           };
         }
 
         if (parseInt(unitData.humiditySensor.lastReading.substring(0,unitData.humiditySensor.lastReading.length - 1)) < 20 ) {
           alertHumidity = true; 
           unitAlert = true;
-          humiditySensorAlert  = {
-            humiditySensor: {
+          humiditySensorAlert  = { 
               value: unitData.humiditySensor.lastReading.substring( 0,unitData.humiditySensor.lastReading.length - 1),
               time: new Date(), 
-              name: unitData.unitName
-            },
+              name: unitData.unitName,
+              type:'HU' 
           };
         }
 
@@ -83,30 +84,28 @@ router.get("/check/:id", (req, res) => {
 
         if(alertSoilMoisture){
           alertObject = {
-            soilMoistureSensorAlert
+            ...soilMoistureSensorAlert
           }
         }
         if(alertTemperature){
           alertObject = {
             ...alertObject ,
-            temperatureSensorAlert 
+            ...temperatureSensorAlert 
           }
         }
         if( alertLightIntensity){
           alertObject = {
             ...alertObject ,
-            lightIntensitySensorAlert 
+            ...lightIntensitySensorAlert 
           }
         }
         if(alertHumidity){
           alertObject = {
             ...alertObject ,
-            humiditySensorAlert 
+            ...humiditySensorAlert 
           }
         }
-        unitAlerts = {
-          [unitData.moduleID]: {...alertObject },
-        };
+        unitAlerts = { ...alertObject , ID:unitData.moduleID }
        
         if(unitAlert){ 
           alerts.push(unitAlerts)
