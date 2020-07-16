@@ -22,16 +22,12 @@ router.get("/check/:id", (req, res) => {
         var unitData = docs[a];
         var unitAlert = false;
         var unitAlerts = null;
-        var soilMoistureSensorAlert = null;
-        var temperatureSensorAlert = null;
-        var lightIntensitySensorAlert = null;
-        var humiditySensorAlert = null;
+        var soilMoistureSensorAlert = null; 
+        var lightIntensitySensorAlert = null; 
 
 
-        var alertSoilMoisture = false; 
-        var alertTemperature = false; 
-        var alertLightIntensity = false; 
-        var alertHumidity = false;  
+        var alertSoilMoisture = false;  
+        var alertLightIntensity = false;  
 
  
         if (parseInt(unitData.soilMoistureSensor.lastReading) < 20 ) {
@@ -40,22 +36,9 @@ router.get("/check/:id", (req, res) => {
           soilMoistureSensorAlert = { 
               value: unitData.soilMoistureSensor.lastReading,
               time: new Date(), 
-              name: unitData.unitName,
-              type:'SM'
+              name: unitData.unitName, 
           };
-        }
-
-        if(parseInt(unitData.temperatureSensor.lastReading.substring(0,unitData.temperatureSensor.lastReading.length - 1)) < 20){
-          alertTemperature= true;  
-          unitAlert = true;
-          temperatureSensorAlert  = { 
-              value: unitData.temperatureSensor.lastReading.substring( 0, unitData.temperatureSensor.lastReading.length - 1),
-              time: new Date(), 
-              name: unitData.unitName,
-              type:'TMP'
-              
-          };
-        }
+        } 
 
         if ( parseInt(unitData.lightIntensitySensor.lastReading.substring( 0, unitData.lightIntensitySensor.lastReading.length - 3 )) < 20 ) {
           alertLightIntensity = true; 
@@ -64,48 +47,25 @@ router.get("/check/:id", (req, res) => {
           lightIntensitySensorAlert = { 
               value: unitData.lightIntensitySensor.lastReading.substring(0,unitData.lightIntensitySensor.lastReading.length - 3),
               time: new Date(), 
-              name: unitData.unitName,
-              type:'LT'
+              name: unitData.unitName, 
           };
-        }
-
-        if (parseInt(unitData.humiditySensor.lastReading.substring(0,unitData.humiditySensor.lastReading.length - 1)) < 20 ) {
-          alertHumidity = true; 
-          unitAlert = true;
-          humiditySensorAlert  = { 
-              value: unitData.humiditySensor.lastReading.substring( 0,unitData.humiditySensor.lastReading.length - 1),
-              time: new Date(), 
-              name: unitData.unitName,
-              type:'HU' 
-          };
-        }
-
+        } 
         var alertObject = {} 
 
         if(alertSoilMoisture){
           alertObject = {
-            ...soilMoistureSensorAlert
+             SM:soilMoistureSensorAlert
           }
         }
-        if(alertTemperature){
-          alertObject = {
-            ...alertObject ,
-            ...temperatureSensorAlert 
-          }
-        }
+       
         if( alertLightIntensity){
           alertObject = {
             ...alertObject ,
-            ...lightIntensitySensorAlert 
+             LT:lightIntensitySensorAlert 
           }
         }
-        if(alertHumidity){
-          alertObject = {
-            ...alertObject ,
-            ...humiditySensorAlert 
-          }
-        }
-        unitAlerts = { ...alertObject , ID:unitData.moduleID }
+      
+        unitAlerts = { ...alertObject   }
        
         if(unitAlert){ 
           alerts.push(unitAlerts)
