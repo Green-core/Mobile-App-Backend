@@ -33,6 +33,7 @@ router.get("/check/:id", (req, res) => {
             value: unitData.soilMoistureSensor.lastReading,
             time: new Date(),
             name: unitData.unitName,
+            id:unitData.moduleID ,
             type: "SM",
           };
         }
@@ -55,20 +56,17 @@ router.get("/check/:id", (req, res) => {
             ),
             time: new Date(),
             name: unitData.unitName,
+            id:unitData.moduleID ,
             type: "LT",
           };
         }
 
         if (alertSoilMoisture) {
-          alerts.push({
-            [unitData["moduleID"] + "SM"]: soilMoistureSensorAlert,
-          });
+          alerts.push({...soilMoistureSensorAlert  });
         }
 
         if (alertLightIntensity) {
-          alerts.push({
-            [unitData["moduleID"] + "LT"]: lightIntensitySensorAlert,
-          });
+          alerts.push({...lightIntensitySensorAlert  });
         }
 
         unitAlert = false;
