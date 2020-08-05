@@ -15,12 +15,12 @@ router.post("/reply", (req, res) => {
     _id: new ObjectId(),
     reply: req.body.reply,
     from: req.body.from,
-    fromID: new ObjectId(req.body.fromId),
+    fromID: req.body.fromId,
     date: new Date()
   }
 
   Chat.update(
-    { _id: new ObjectId(req.body.id) },
+    { _id: req.body.id },
     {
       updatedAt: new Date(),
       $push: { replies: reply }

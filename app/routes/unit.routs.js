@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Unit = require("../models/unit.model");
+const ObjectId = require('mongoose').Types.ObjectId; 
 
 /**
  * @route   GET /units/check/:id
@@ -71,14 +72,15 @@ router.delete("/delete/:id", (req, res) => {
 
 /**
  * @route   GET /units/get/:id
- * @desc    Get all units  related to one user data
+ * @desc    Get all units  related to one user
  * @access  Private
  */
 
 
 router.get("/get/:id", (req, res) => {
-  Unit.find({ownerID:req.params.id})
+  Unit.find({userID: new ObjectId(req.params.id)})
     .then((result) => {
+      console.log(req.params.id)
       res.send(result);
     })
     .catch((err) => {
@@ -87,5 +89,56 @@ router.get("/get/:id", (req, res) => {
   res.status(200);
 });
  
+
+/**
+ * @route   GET /units/get/:id
+ * @desc    Get data related to one unit
+ * @access  Private
+ */
+
+
+router.get("/get/:id", (req, res) => {
+  Unit.find({moduleID: new ObjectId(req.params.id)})
+    .then((result) => {
+      console.log(req.params.id)
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  res.status(200);
+});
+ 
+/**
+ * @route   PUT /units/actuators/:id
+ * @desc    Turn actuators on/off
+ * @access  Private
+ */
+
+router.put("/actuators/:id", (req, res) => {
+  Unit.updateOne(
+    {
+      moduleID: req.params.id,
+    },
+    {
+      [req.body.actuator]:{
+          activated:req.body.state,
+          lastUpdatedTime: new Date()
+      }  
+    },
+    
+    { upsert: true }
+  )
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  res.status(200);
+});
+
+
+
 
 module.exports = router;
