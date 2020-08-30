@@ -37,8 +37,8 @@ app.get("/", (req, res) => {
 // routes
 const userRoutes = require("./app/routes/user.routes");
 const plantRoutes = require("./app/routes/plant.routes");
-const unitRoutes = require("./app/routes/unit.routs");
-const chatRoutes = require("./app/routes/chatRoutes") 
+const unitRoutes = require("./app/routes/unit.routes");
+const chatRoutes = require("./app/routes/chat.routes") 
 const notificationRoutes = require("./app/routes/notification.routes") 
 const tipsRoutes = require("./app/routes/tips.routes") 
  
