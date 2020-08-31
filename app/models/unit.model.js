@@ -204,7 +204,7 @@ const UnitSchema = new mongoose.Schema({
     automated: {
         type: Boolean,
         required: true,
-        default: ""
+        default: false
     },
 
 })

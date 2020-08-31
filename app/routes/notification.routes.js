@@ -22,6 +22,7 @@ router.get("/check/:id", (req, res) => {
         var unitAlerts = null;
         var soilMoistureSensorAlert = null;
         var lightIntensitySensorAlert = null;
+        const automated = docs[a].automated
 
         var alertSoilMoisture = false;
         var alertLightIntensity = false;
@@ -61,11 +62,11 @@ router.get("/check/:id", (req, res) => {
           };
         }
 
-        if (alertSoilMoisture) {
+        if (alertSoilMoisture && !automated) {
           alerts.push({...soilMoistureSensorAlert  });
         }
 
-        if (alertLightIntensity) {
+        if (alertLightIntensity && !automated) {
           alerts.push({...lightIntensitySensorAlert  });
         }
 

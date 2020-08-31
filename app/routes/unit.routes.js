@@ -26,16 +26,16 @@ router.get("/check/:id", (req, res) => {
 
 /**
  * @route   PUT /units/update/:id
- * @desc    Update unit data
+ * @desc    Update unit data other than actuators 
  * @access  Private
  */
 
-router.put("/update/:id", (req, res) => {
+router.put("/update/:id", (req, res) => { 
   Unit.updateOne(
     {
       _id: req.params.id,
     },
-    req.body,
+    req.body, 
     { upsert: true }
   )
     .then((result) => {
@@ -46,6 +46,8 @@ router.put("/update/:id", (req, res) => {
     });
   res.status(200);
 });
+  
+   
 
 /**
  * @route   DELETE /units/delete/:id
@@ -91,14 +93,14 @@ router.get("/get/:id", (req, res) => {
  
 
 /**
- * @route   GET /units/get/:id
+ * @route   GET /units/get/unit/:id
  * @desc    Get data related to one unit
  * @access  Private
  */
 
 
-router.get("/get/:id", (req, res) => {
-  Unit.find({moduleID: new ObjectId(req.params.id)})
+router.get("/get/unit/:id", (req, res) => {
+  Unit.findOne({_id: [req.params.id] })
     .then((result) => {
       console.log(req.params.id)
       res.send(result);
@@ -118,7 +120,7 @@ router.get("/get/:id", (req, res) => {
 router.put("/actuators/:id", (req, res) => {
   Unit.updateOne(
     {
-      moduleID: req.params.id,
+      _id: req.params.id,
     },
     {
       [req.body.actuator]:{
