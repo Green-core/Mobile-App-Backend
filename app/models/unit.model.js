@@ -206,6 +206,11 @@ const UnitSchema = new mongoose.Schema({
         required: true,
         default: false
     },
+    plantType: {
+        type: String,
+        required: true,
+        default: ""
+    },
 
 })
 
